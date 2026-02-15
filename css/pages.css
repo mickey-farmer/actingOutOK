@@ -72,6 +72,12 @@
 }
 
 /* Expiring within a week */
+.casting-public-note {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
 .casting-submit-cta {
   margin-top: var(--space-4);
   font-size: var(--text-sm);

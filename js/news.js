@@ -37,7 +37,10 @@
         return r.json();
       })
       .then(function (data) {
-        var list = (data || []).slice();
+        var raw = Array.isArray(data) ? data : (data && data.items) || [];
+        var list = raw.filter(function (entry) {
+          return entry.deleted !== "yes" && entry.deleted !== true;
+        });
         list.sort(function (a, b) {
           var da = a.date ? new Date(a.date).getTime() : 0;
           var db = b.date ? new Date(b.date).getTime() : 0;

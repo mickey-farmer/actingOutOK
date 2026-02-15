@@ -171,8 +171,11 @@
         return r.json();
       })
       .then(function (data) {
+        function notDeleted(entry) {
+          return entry.deleted !== "yes" && entry.deleted !== true;
+        }
         if (data.items && data.items.length) {
-          items = data.items.slice();
+          items = data.items.filter(notDeleted);
         } else {
           const res = (data.resources || []).slice();
           const ven = (data.vendors || []).slice();
@@ -182,7 +185,7 @@
           }).concat(ven.map(function (v) {
             v.section = v.section || "Vendors";
             return v;
-          }));
+          })).filter(notDeleted);
         }
         render();
       })
