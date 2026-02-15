@@ -100,5 +100,20 @@
         "ethnicity": "All ethnicities"
       }
     ]
+  },
+  {
+    "id": "angus-led-me-to-you",
+    "archived": true,
+    "title": "Angus Led Me To You (2026)"
+  },
+  {
+    "id": "honor-2026",
+    "archived": true,
+    "title": "Honor (2026)"
+  },
+  {
+    "id": "south-of-stillwater",
+    "archived": true,
+    "title": "South of Stillwater (2025)"
   }
 ]

@@ -213,14 +213,81 @@
     );
   }
 
-  function renderCard(entry) {
+  function getShareUrl(entryId) {
+    return window.location.origin + window.location.pathname + window.location.search + "#call-" + (entryId || "");
+  }
+
+  function handleShare(entry) {
+    const url = getShareUrl(entry.id);
+    const title = (entry.title || "Casting call").trim();
+    const text = "Casting call: " + title + " – Acting Out OK";
+    if (typeof navigator !== "undefined" && navigator.share) {
+      navigator.share({ title: title, text: text, url: url }).catch(function () {
+        copyShareUrl(url);
+      });
+    } else {
+      copyShareUrl(url);
+    }
+  }
+
+  function copyShareUrl(url) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function () {
+        showShareFeedback();
+      }).catch(function () { fallbackCopy(url); });
+    } else {
+      fallbackCopy(url);
+    }
+  }
+
+  function fallbackCopy(url) {
+    var ta = document.createElement("textarea");
+    ta.value = url;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showShareFeedback();
+    } catch (e) { /* ignore */ }
+    document.body.removeChild(ta);
+  }
+
+  function showShareFeedback() {
+    var el = document.querySelector(".casting-share-feedback");
+    if (el) el.remove();
+    el = document.createElement("span");
+    el.className = "casting-share-feedback";
+    el.setAttribute("aria-live", "polite");
+    el.textContent = "Link copied!";
+    document.body.appendChild(el);
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 2000);
+  }
+
+  function renderCard(entry, opts) {
+    const useShareId = !(opts && opts.noId);
     const card = document.createElement("article");
+    if (useShareId && entry.id) card.id = "call-" + entry.id;
     card.className = "casting-card" + (entry.roles && entry.roles.length > 0 ? " casting-card--multi" : "");
     card.dataset.id = entry.id;
     card.innerHTML =
       entry.roles && entry.roles.length > 0
         ? renderMultiRoleCard(entry)
         : renderSingleCard(entry);
+    const shareRow = document.createElement("div");
+    shareRow.className = "casting-share-row";
+    const shareBtn = document.createElement("button");
+    shareBtn.type = "button";
+    shareBtn.className = "casting-share-btn";
+    shareBtn.textContent = "Share";
+    shareBtn.setAttribute("aria-label", "Share this casting call");
+    shareBtn.addEventListener("click", function () { handleShare(entry); });
+    shareRow.appendChild(shareBtn);
+    card.appendChild(shareRow);
     return card;
   }
 
@@ -335,7 +402,7 @@
     if (expiringGrid) {
       expiringGrid.innerHTML = "";
       expiringSoon.forEach(function (entry) {
-        expiringGrid.appendChild(renderCard(entry));
+        expiringGrid.appendChild(renderCard(entry, { noId: true }));
       });
     }
     if (noResultsExpiring) noResultsExpiring.hidden = expiringSoon.length > 0;
@@ -372,17 +439,39 @@
       if (el) el.addEventListener("change", render);
     });
     filterReset.addEventListener("click", function () {
-      filterAge.value = "";
-      filterLocation.value = "";
-      filterPay.value = "";
-      filterType.value = "";
-      filterUnion.value = "";
-      if (filterUnder18) filterUnder18.value = "";
-      if (filterGender) filterGender.value = "";
-      if (filterEthnicity) filterEthnicity.value = "";
-      if (filterExpiring) filterExpiring.value = "";
+      clearFilters();
       render();
     });
+  }
+
+  function getHashCallId() {
+    var hash = (window.location.hash || "").slice(1);
+    return hash.indexOf("call-") === 0 ? hash.slice(5) : null;
+  }
+
+  function clearFilters() {
+    if (filterAge) filterAge.value = "";
+    if (filterLocation) filterLocation.value = "";
+    if (filterPay) filterPay.value = "";
+    if (filterType) filterType.value = "";
+    if (filterUnion) filterUnion.value = "";
+    if (filterUnder18) filterUnder18.value = "";
+    if (filterGender) filterGender.value = "";
+    if (filterEthnicity) filterEthnicity.value = "";
+    if (filterExpiring) filterExpiring.value = "";
+    activeTab = "all";
+  }
+
+  function scrollToCardAndHighlight(entryId) {
+    var card = document.getElementById("call-" + entryId);
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+    card.classList.add("casting-card--highlight");
+    card.setAttribute("tabindex", "-1");
+    card.focus({ preventScroll: true });
+    window.setTimeout(function () {
+      card.classList.remove("casting-card--highlight");
+    }, 3000);
   }
 
   function loadData() {
@@ -400,7 +489,14 @@
           var db = b.date ? new Date(b.date).getTime() : 0;
           return db - da;
         });
+        var hashId = getHashCallId();
+        if (hashId) {
+          clearFilters();
+        }
         render();
+        if (hashId) {
+          scrollToCardAndHighlight(hashId);
+        }
       })
       .catch(function (err) {
         var msg = "Unable to load casting calls.";
