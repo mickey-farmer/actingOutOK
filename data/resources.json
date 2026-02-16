@@ -188,16 +188,6 @@
 
   "Studios & Sound Stages": [
     {
-      "id": "studio-1",
-      "subcategory": null,
-      "title": "Prairie Surf Studios",
-      "type": "Studio",
-      "description": "Downtown Oklahoma City. 1.3 million square feet with five clearspan soundstages; converted from the former Cox Convention Center. Oklahoma Film + Music certified.",
-      "location": "Oklahoma City",
-      "link": "https://prairiesurf.com",
-      "vendor": false
-    },
-    {
       "id": "studio-2",
       "subcategory": null,
       "title": "Filmmakers Ranch",
