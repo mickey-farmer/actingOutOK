@@ -55,6 +55,16 @@
   </aside>
 
   <main class="main-content">
+    <div class="resources-page">
+      <aside class="resources-nav" id="resources-nav" aria-label="Jump to section" aria-expanded="true" hidden>
+        <button type="button" class="resources-nav-toggle" id="resources-nav-toggle" aria-expanded="true" aria-controls="resources-nav-list" aria-label="Toggle section list">Sections</button>
+        <nav aria-label="Resource sections">
+          <ul id="resources-nav-list" class="resources-nav-list">
+            <!-- Populated by resources.js -->
+          </ul>
+        </nav>
+      </aside>
+      <div class="resources-content">
     <div class="page-header">
       <h1>Resources</h1>
       <p>Classes, photographers, theaters, agencies, and more for anyone starting out in Oklahoma.</p>
@@ -74,11 +84,12 @@
           <option value="Networking">Networking</option>
           <option value="Photographers">Photographers</option>
           <option value="Props">Props</option>
-          <option value="Stunts">Stunts</option>
           <option value="Studios &amp; Sound Stages">Studios &amp; Sound Stages</option>
+          <option value="Stunts">Stunts</option>
           <option value="Theaters">Theaters</option>
-          <option value="Voice">Voice</option>
           <option value="Vendors">Vendors</option>
+          <option value="Voice">Voice</option>
+          <option value="Writing">Writing</option>
         </select>
       </div>
       <div class="filter-group" id="filter-subcategory-wrap" hidden>
@@ -116,6 +127,8 @@
       <!-- Sections and grids rendered by JS -->
     </div>
     <p class="no-results" id="resources-no-results" hidden>No resources match your filters.</p>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">

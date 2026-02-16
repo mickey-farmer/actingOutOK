@@ -292,6 +292,23 @@
     }
   ],
 
+  
+
+
+
+  "Vendors": [
+    {
+      "id": "vendor-1",
+      "subcategory": null,
+      "title": "AMP Equipment",
+      "type": "Equipment Rental",
+      "description": "Oklahoma film and camera equipment rental. Camera packages, lighting, grip, and production gear for features, TV, and commercials.",
+      "location": "Oklahoma",
+      "link": "https://ampequipment.com",
+      "vendor": true
+    }
+  ],
+
   "Voice": [
     {
       "id": "voice-1",
@@ -305,17 +322,17 @@
       "vendor": false
     }
   ],
-
-  "Vendors": [
+  
+  "Writing": [
     {
-      "id": "vendor-1",
+      "id": "writing-1",
       "subcategory": null,
-      "title": "AMP Equipment",
-      "type": "Equipment Rental",
-      "description": "Oklahoma film and camera equipment rental. Camera packages, lighting, grip, and production gear for features, TV, and commercials.",
-      "location": "Oklahoma",
-      "link": "https://ampequipment.com",
-      "vendor": true
+      "title": "OFA Writer's Pipeline",
+      "type": "Program",
+      "description": "Submit short, character-driven scripts (1–2 pages, 2–4 characters) to OFA Studios. Selected scripts are rehearsed and filmed in their on-camera acting classes with dual-camera setup, lighting, and professional editing, then screened at OFA. Writers keep full ownership; free to submit. PDF, original work only.",
+      "location": "Oklahoma City",
+      "link": "https://www.ofastudios.com/writers-pipeline",
+      "vendor": false
     }
   ]
 }

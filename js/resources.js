@@ -10,10 +10,17 @@
   const resourcesToolbar = document.getElementById("resources-toolbar");
   const expandAllBtn = document.getElementById("resources-expand-all");
   const collapseAllBtn = document.getElementById("resources-collapse-all");
+  const resourcesNavList = document.getElementById("resources-nav-list");
+  const resourcesNav = document.getElementById("resources-nav");
+  const resourcesNavToggle = document.getElementById("resources-nav-toggle");
 
-  // Section order (alphabetized) – no "Resources" section
-  const SECTION_ORDER = ["Agencies", "Casting", "Classes & Workshops", "Networking", "Photographers", "Props", "Stunts", "Studios & Sound Stages", "Theaters", "Voice", "Vendors"];
+  // Section order (alphabetized)
+  const SECTION_ORDER = ["Agencies", "Casting", "Classes & Workshops", "Networking", "Photographers", "Props", "Studios & Sound Stages", "Stunts", "Theaters", "Vendors", "Voice", "Writing"];
   const SUBCATEGORY_ORDER = ["Business", "Improv", "On-Camera Film", "Stage", "Stunts", "Voice Over"];
+
+  function sectionId(section) {
+    return "section-" + (section || "").toLowerCase().replace(/\s*&\s*/g, "-").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  }
 
   let items = [];
 
@@ -78,10 +85,6 @@
     if (noResults) noResults.hidden = filtered.length > 0;
     if (resourcesToolbar) resourcesToolbar.hidden = filtered.length === 0;
 
-    if (filtered.length === 0) {
-      return;
-    }
-
     // Group by section (alphabetical order)
     const bySection = {};
     SECTION_ORDER.forEach(function (sec) {
@@ -93,12 +96,19 @@
       bySection[sec].push(entry);
     });
 
+    if (filtered.length === 0) {
+      if (resourcesNavList) resourcesNavList.innerHTML = "";
+      if (resourcesNav) resourcesNav.hidden = true;
+      return;
+    }
+
     SECTION_ORDER.forEach(function (section) {
       const list = bySection[section] || [];
       if (list.length === 0) return;
 
       const sectionEl = document.createElement("section");
       sectionEl.className = "resources-section";
+      sectionEl.id = sectionId(section);
       sectionEl.setAttribute("aria-label", getSectionLabel(section));
 
       const details = document.createElement("details");
@@ -157,6 +167,23 @@
       sectionEl.appendChild(details);
       container.appendChild(sectionEl);
     });
+
+    // Update sidebar nav with links to visible sections
+    if (resourcesNavList) {
+      resourcesNavList.innerHTML = "";
+      SECTION_ORDER.forEach(function (section) {
+        const list = bySection[section] || [];
+        if (list.length === 0) return;
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + sectionId(section);
+        a.textContent = section;
+        a.className = "resources-nav-link";
+        li.appendChild(a);
+        resourcesNavList.appendChild(li);
+      });
+    }
+    if (resourcesNav) resourcesNav.hidden = !resourcesNavList || resourcesNavList.children.length === 0;
   }
 
   function expandOrCollapseAll(open) {
@@ -191,7 +218,7 @@
           return entry.deleted !== "yes" && entry.deleted !== true;
         }
         // Section-grouped format: { "Agencies": [...], "Classes & Workshops": [...], ... }
-        const sectionKeys = ["Agencies", "Casting", "Classes & Workshops", "Networking", "Photographers", "Props", "Stunts", "Studios & Sound Stages", "Theaters", "Voice", "Vendors"];
+        const sectionKeys = SECTION_ORDER.slice();
         const hasSections = sectionKeys.some(function (sec) { return Array.isArray(data[sec]); });
         if (hasSections) {
           items = [];
@@ -230,7 +257,18 @@
     if (collapseAllBtn) collapseAllBtn.addEventListener("click", function () { expandOrCollapseAll(false); });
   }
 
+  function initResourcesNav() {
+    if (!resourcesNavToggle || !resourcesNav) return;
+    resourcesNavToggle.addEventListener("click", function () {
+      const expanded = resourcesNav.getAttribute("aria-expanded") !== "true";
+      resourcesNav.setAttribute("aria-expanded", expanded ? "true" : "false");
+      resourcesNav.classList.toggle("resources-nav-collapsed", !expanded);
+      resourcesNavToggle.setAttribute("aria-expanded", expanded);
+    });
+  }
+
   initFilters();
   initExpandCollapse();
+  initResourcesNav();
   loadData();
 })();
