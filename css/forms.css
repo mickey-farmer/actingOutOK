@@ -1,116 +1,7 @@
-/* Contributor page */
+/* Shared form styles for submit-resource and submit-casting (no contributor page) */
+.form-page-main,
 .contributor-main {
   max-width: 640px;
-}
-
-.contributor-gate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  padding: var(--space-8);
-}
-
-.contributor-gate-inner {
-  width: 100%;
-  max-width: 360px;
-  padding: var(--space-8);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-}
-
-.contributor-gate-inner h1 {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  margin: 0 0 var(--space-2);
-}
-
-.contributor-gate-inner p {
-  color: var(--color-text-muted);
-  margin: 0 0 var(--space-6);
-  font-size: var(--text-sm);
-}
-
-.contributor-gate-inner form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.contributor-gate-inner input[type="password"] {
-  padding: var(--space-3) var(--space-4);
-  font-family: inherit;
-  font-size: var(--text-base);
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text);
-}
-
-.contributor-gate-inner button[type="submit"] {
-  padding: var(--space-3) var(--space-4);
-  font-family: inherit;
-  font-size: var(--text-base);
-  font-weight: 600;
-  background: var(--color-accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.contributor-gate-inner button[type="submit"]:hover {
-  background: var(--color-accent-hover);
-}
-
-.contributor-error {
-  margin-top: var(--space-3);
-  font-size: var(--text-sm);
-  color: #ef4444;
-}
-
-.contributor-panel .page-header {
-  margin-bottom: var(--space-6);
-}
-
-.contributor-panel .page-header code {
-  font-size: var(--text-sm);
-  background: var(--color-surface);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.contributor-tabs {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--space-2);
-}
-
-.contributor-tabs [role="tab"] {
-  padding: var(--space-2) var(--space-4);
-  font-family: inherit;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: color var(--transition-fast), background var(--transition-fast);
-}
-
-.contributor-tabs [role="tab"]:hover {
-  color: var(--color-text);
-}
-
-.contributor-tabs [role="tab"][aria-selected="true"] {
-  color: var(--color-accent);
-  background: var(--color-accent-muted);
 }
 
 .contributor-form .form-row {
@@ -248,57 +139,6 @@
   background: var(--color-accent-hover);
 }
 
-.contributor-output {
-  margin-top: var(--space-8);
-  padding: var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-}
-
-.contributor-output h2 {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  margin: 0 0 var(--space-2);
-}
-
-.contributor-output-hint {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  margin: 0 0 var(--space-4);
-}
-
-.contributor-output textarea {
-  width: 100%;
-  padding: var(--space-4);
-  font-family: ui-monospace, monospace;
-  font-size: var(--text-sm);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text);
-  resize: vertical;
-  margin-bottom: var(--space-3);
-}
-
-#output-copy {
-  cursor: pointer;
-}
-
-.form-row-radio {
-  display: flex;
-  gap: var(--space-6);
-  flex-wrap: wrap;
-}
-.form-row-radio label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  cursor: pointer;
-}
-
 .contributor-multi-fields .form-row label:first-child {
   margin-bottom: var(--space-2);
 }
@@ -358,6 +198,19 @@
 }
 .role-block .form-row:last-child {
   margin-bottom: 0;
+}
+
+.form-row-radio {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+.form-row-radio label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {

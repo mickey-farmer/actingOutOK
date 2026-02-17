@@ -12,7 +12,6 @@ A static website for the Oklahoma film community: casting calls, resources, vend
 - **About** – Your story; linked from footer
 - **Privacy** – Template policy; update date and contact before publishing
 - **Spotlight** – Announcements modal (same data on every page). A floating button in the lower-right opens a slide-up overlay with one-sentence updates (e.g. “Level up your stunts game at OFA March 15–20. Click here for more.”). Edit `data/spotlight.json` to add or remove items.
-- **Contributor** – Password-protected page at `contributor.html` (not linked from the site) to generate JSON for new casting calls, news, and resources. You copy the output into the right file in `data/`; the site does not save to the repo.
 
 ## Ordering
 
@@ -22,7 +21,7 @@ A static website for the Oklahoma film community: casting calls, resources, vend
 ## Tech
 
 - Plain HTML, CSS, and JavaScript. No build step.
-- Data in `data/*.json` (casting-calls, resources, news). A casting call can be a **single role** (flat fields) or a **project with multiple roles** (use a `roles` array; each role has `roleTitle`, `description`, `pay`, `ageRange`, `type`, `union`, etc.). Edit these files or use the contributor helper to generate JSON.
+- Data in `data/*.json` (casting-calls, resources, news). A casting call can be a **single role** (flat fields) or a **project with multiple roles** (use a `roles` array; each role has `roleTitle`, `description`, `pay`, `ageRange`, `type`, `union`, etc.). Edit these files directly to add or change content.
 - Designed for **GitHub Pages**: enable Pages on this repo (Settings → Pages → Source: main branch, / (root)). The `.nojekyll` file ensures static files are served as-is.
 
 ### Local development
@@ -55,7 +54,6 @@ A quick checklist so the site runs well for visitors:
 - **About** – Edit `about.html` with your own journey and contact.
 - **Privacy** – Edit `privacy.html`: set “Last updated” date and “[your contact email or form]”.
 - **News articles** – Add individual pages under `news/` (e.g. `news/my-article.html`) and set the URL in `js/news.js` (replace the `url = "#"` line with the real path, or build URLs from `entry.slug`).
-- **Contributor password** – Change `CONTRIBUTOR_PASSWORD` at the top of `js/contributor.js`. The contributor page does not save to the repo; it only generates JSON for you to paste into `data/casting-calls.json`, `data/news.json`, or `data/resources.json`. For true password-protected saving (e.g. a CMS that commits to the repo), you’d need something like Decap CMS + GitHub OAuth or a small backend.
 - **Submit a casting call (public form)** – The casting calls page links to `submit-casting.html`, where anyone can request that a casting call be added. Submissions are sent by email via **Formspree**. To enable it: (1) Sign up at [formspree.io](https://formspree.io), (2) Create a new form and set the notification email to the address that should receive submissions (e.g. `mickey@mickeyonstage.com`), (3) Copy your form ID from the form’s endpoint (e.g. `https://formspree.io/f/xyzabc` → `xyzabc`), (4) In `submit-casting.html`, replace `FORM_ID` in the form’s `action` attribute with your form ID. The email you receive will include the submitter’s name/email and a **Casting call JSON** field with the full listing data (ready to paste into `data/casting-calls.json` if you approve it).
 
 ## Structure
@@ -69,19 +67,18 @@ A quick checklist so the site runs well for visitors:
   news.html
   about.html
   privacy.html
-  contributor.html   # Contributor forms (not linked; use URL directly)
   css/
     variables.css
     main.css
     splash.css
     pages.css
-    contributor.css
+    forms.css        # Submit resource / submit casting form styles
   js/
     casting-calls.js
     submit-casting.js
+    submit-resource.js
     resources.js
     news.js
-    contributor.js
   data/
     casting-calls.json
     resources.json   # Grouped by section (Agencies, Casting, Classes & Workshops, …). Add new entries under the right section; the site sorts alphabetically by title within each section.

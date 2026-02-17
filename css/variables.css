@@ -2,6 +2,7 @@
 :root {
   /* Colors – high-contrast, low-glare, informational */
   --color-bg: #F1F3F5;
+  --color-bg-deep: #E8EAED;
   --color-bg-elevated: #ffffff;
   --color-surface: #ffffff;
   --color-border: #DFE6E9;
