@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/pages.css" />
-  <link rel="stylesheet" href="css/contributor.css" />
+  <link rel="stylesheet" href="css/forms.css" />
   <link rel="stylesheet" href="css/spotlight.css" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
@@ -54,7 +54,7 @@
     </div>
   </aside>
 
-  <main class="main-content contributor-main">
+  <main class="main-content form-page-main">
     <div class="page-header">
       <h1>Suggest a News Story</h1>
       <p>Have a tip or story idea for our news blog? Submit it below. We’ll review it and, if it fits our coverage, we may publish it and credit you as the source. See our <a href="terms.html#news-story-submissions">Terms of Service</a> for how we handle submissions.</p>
@@ -65,7 +65,7 @@
       <p><a href="https://news.actingoutok.com">Visit our News blog</a></p>
     </div>
 
-    <form id="form-submit-news" class="contributor-form" action="https://formspree.io/f/xjgeojoj" method="POST" hidden>
+    <form id="form-submit-news" class="submit-form" action="https://formspree.io/f/xjgeojoj" method="POST" hidden>
       <input type="hidden" name="_subject" value="Acting Out OK – News story suggestion" />
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true" />
 
@@ -128,7 +128,7 @@
         <p class="form-hint">Complete the captcha so we know you’re not a bot.</p>
       </div>
 
-      <button type="submit" class="contributor-submit">Submit</button>
+      <button type="submit" class="form-submit-btn">Submit</button>
     </form>
   </main>
 

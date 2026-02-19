@@ -1,14 +1,13 @@
-/* Shared form styles for submit-resource and submit-casting (no contributor page) */
-.form-page-main,
-.contributor-main {
+/* Shared form styles for submit-resource, submit-casting, submit-news, report-issue */
+.form-page-main {
   max-width: 640px;
 }
 
-.contributor-form .form-row {
+.submit-form .form-row {
   margin-bottom: var(--space-4);
 }
 
-.contributor-form .form-row label {
+.submit-form .form-row label {
   display: block;
   font-size: var(--text-sm);
   font-weight: 500;
@@ -16,13 +15,13 @@
   margin-bottom: var(--space-2);
 }
 
-.contributor-form .form-row input[type="text"],
-.contributor-form .form-row input[type="email"],
-.contributor-form .form-row input[type="url"],
-.contributor-form .form-row input[type="number"],
-.contributor-form .form-row input[type="date"],
-.contributor-form .form-row select,
-.contributor-form .form-row textarea {
+.submit-form .form-row input[type="text"],
+.submit-form .form-row input[type="email"],
+.submit-form .form-row input[type="url"],
+.submit-form .form-row input[type="number"],
+.submit-form .form-row input[type="date"],
+.submit-form .form-row select,
+.submit-form .form-row textarea {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   font-family: inherit;
@@ -31,6 +30,31 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.submit-form .form-row input[type="text"]:hover,
+.submit-form .form-row input[type="email"]:hover,
+.submit-form .form-row input[type="url"]:hover,
+.submit-form .form-row input[type="number"]:hover,
+.submit-form .form-row input[type="date"]:hover,
+.submit-form .form-row select:hover,
+.submit-form .form-row textarea:hover {
+  border-color: var(--color-text-muted);
+}
+.submit-form .form-row input[type="text"]:focus,
+.submit-form .form-row input[type="email"]:focus,
+.submit-form .form-row input[type="url"]:focus,
+.submit-form .form-row input[type="number"]:focus,
+.submit-form .form-row input[type="date"]:focus,
+.submit-form .form-row select:focus,
+.submit-form .form-row textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-muted);
+}
+.submit-form .form-row textarea {
+  min-height: 6em;
+  resize: vertical;
 }
 
 .pay-input-wrap {
@@ -68,6 +92,23 @@
   margin: var(--space-6) 0;
 }
 
+.form-hint {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.submit-form .form-row.cf-turnstile-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.submit-form .form-row.cf-turnstile-wrap .form-hint {
+  margin-top: 0;
+}
+
 .submit-thank-you {
   padding: var(--space-6);
   background: var(--color-surface);
@@ -86,13 +127,13 @@
   font-weight: 500;
 }
 
-.contributor-form .form-row.two-cols {
+.submit-form .form-row.two-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-4);
 }
 
-.contributor-form .form-row input[type="checkbox"] {
+.submit-form .form-row input[type="checkbox"] {
   margin-right: var(--space-2);
 }
 
@@ -121,7 +162,7 @@
   margin-top: 0.2em;
 }
 
-.contributor-submit {
+.form-submit-btn {
   margin-top: var(--space-4);
   padding: var(--space-3) var(--space-6);
   font-family: inherit;
@@ -135,15 +176,15 @@
   transition: background var(--transition-fast);
 }
 
-.contributor-submit:hover {
+.form-submit-btn:hover {
   background: var(--color-accent-hover);
 }
 
-.contributor-multi-fields .form-row label:first-child {
+.form-multi-fields .form-row label:first-child {
   margin-bottom: var(--space-2);
 }
 
-.contributor-add-role {
+.form-add-role {
   margin-top: var(--space-2);
   padding: var(--space-2) var(--space-4);
   font-family: inherit;
@@ -156,7 +197,7 @@
   cursor: pointer;
   transition: color var(--transition-fast), border-color var(--transition-fast);
 }
-.contributor-add-role:hover {
+.form-add-role:hover {
   color: var(--color-text);
   border-color: var(--color-accent);
 }
@@ -214,7 +255,7 @@
 }
 
 @media (max-width: 640px) {
-  .contributor-form .form-row.two-cols {
+  .submit-form .form-row.two-cols {
     grid-template-columns: 1fr;
   }
 }
