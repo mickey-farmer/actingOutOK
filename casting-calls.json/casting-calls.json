@@ -1,0 +1,111 @@
+[
+  {
+    "slug": "hide-rose-state-2026",
+    "title": "HIDE",
+    "date": "2026-02-18",
+    "auditionDeadline": "2026-02-28",
+    "location": "Midwest City",
+    "pay": "IMDb credit, selects, craft services",
+    "type": "Short Film",
+    "union": "Non-Union",
+    "under18": false,
+    "roleCount": 4
+  },
+  {
+    "slug": "after-dark-2026",
+    "title": "After Dark – Student Short Film (Lead & Supporting)",
+    "date": "2026-02-17",
+    "auditionDeadline": "2026-02-28",
+    "location": "Norman",
+    "pay": "$25–$50/day",
+    "type": "Short Film",
+    "union": "Non-Union",
+    "under18": false,
+    "roleCount": 3
+  },
+  {
+    "slug": "here-we-go-again-2026",
+    "title": "Here We Go Again",
+    "date": "2026-02-15",
+    "auditionDeadline": "2026-03-14",
+    "location": "Oklahoma City",
+    "pay": "Paid (compensation discussed with production)",
+    "type": "Feature Film",
+    "union": "Non-Union",
+    "under18": false,
+    "roleCount": 1
+  },
+  {
+    "slug": "lyric-theatre-summer-2026",
+    "title": "Lyric Theatre of Oklahoma – Summer 2026 Season",
+    "date": "2026-02-15",
+    "auditionDeadline": "2026-02-26",
+    "location": "Oklahoma City",
+    "pay": "Paid",
+    "type": "Theatre",
+    "union": "Union",
+    "under18": true,
+    "roleCount": 3
+  },
+  {
+    "slug": "mad-jackal-2026",
+    "title": "Mad Jackal: The Rise of Jackal Junior",
+    "date": "2026-02-15",
+    "auditionDeadline": "2026-02-20",
+    "location": "Spencer",
+    "pay": "Unpaid",
+    "type": "Short Film",
+    "union": "Non-Union",
+    "under18": true,
+    "roleCount": 2
+  },
+  {
+    "slug": "new-1771170270895",
+    "title": "First Light",
+    "date": "2026-02-15",
+    "auditionDeadline": null,
+    "location": "Oklahoma City",
+    "pay": "Credit and Copy",
+    "type": "Short Film",
+    "union": "Non-Union",
+    "under18": false,
+    "roleCount": 1,
+    "archived": true
+  },
+  {
+    "slug": "theatre-tulsa-fun-home-2026",
+    "title": "Theatre Tulsa – Fun Home",
+    "date": "2026-02-15",
+    "auditionDeadline": "2026-03-15",
+    "location": "Tulsa",
+    "pay": "Unpaid",
+    "type": "Theatre",
+    "union": "Non-Union",
+    "under18": true,
+    "roleCount": 8
+  },
+  {
+    "slug": "angus-led-me-to-you",
+    "title": "Angus Led Me To You (2026)",
+    "auditionDeadline": null,
+    "under18": false,
+    "roleCount": 0,
+    "archived": true
+  },
+  {
+    "slug": "honor-2026",
+    "title": "Honor (2026)",
+    "auditionDeadline": null,
+    "under18": false,
+    "roleCount": 0,
+    "archived": true
+  },
+  {
+    "slug": "south-of-stillwater",
+    "title": "South of Stillwater (2025)",
+    "auditionDeadline": null,
+    "under18": false,
+    "roleCount": 0,
+    "archived": true
+  }
+]
