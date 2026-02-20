@@ -1,0 +1,59 @@
+{
+  "id": "lyric-theatre-summer-2026",
+  "date": "2026-02-15",
+  "title": "Lyric Theatre of Oklahoma – Summer 2026 Season",
+  "description": "Lyric Theatre of Oklahoma is casting its 2026 summer season, which includes Annie, Sister Act, and Sweeney Todd. The company works under AEA URTA and Guest Artist agreements; both union and non-union performers are cast. Lyric considers actors of all backgrounds and genders. Auditions are accompanied; see the official auditions page for requirements and sign-up.",
+  "location": "Oklahoma City",
+  "director": "",
+  "filmingDates": "Season runs summer 2026. Exact rehearsal and performance dates are on Lyric’s auditions page.",
+  "auditionDeadline": "2026-02-26",
+  "submissionDetails": "Sign-up links and categories (adult singer/dancer, apprentice, youth) are on Lyric’s auditions page. Prepare two contrasting songs in the style of the season; bring sheet music. Bring one 8×10 headshot and resume (trimmed and stapled back to back). Video submissions and all casting questions: CastingCoordinator@LyricTheatreOKC.org. Full instructions and character breakdowns: see link below.",
+  "sourceLink": "https://lyrictheatreokc.com/auditions/",
+  "exclusive": false,
+  "under18": true,
+  "roles": [
+    {
+      "roleTitle": "Singer/Dancer (Adult 18+)",
+      "description": "Principal season roles. Auditions Feb 21–26, 2026; callbacks Feb 28–March 1. Rehearsals Tue–Sun. See Lyric’s page for breakdown and sides.",
+      "pay": "Paid",
+      "payMin": null,
+      "payMax": null,
+      "ageRange": "18+",
+      "ageMin": 18,
+      "ageMax": null,
+      "type": "Theatre",
+      "union": "Union",
+      "gender": "All genders",
+      "ethnicity": "All ethnicities"
+    },
+    {
+      "roleTitle": "Apprentice (2026 HS graduate and younger)",
+      "description": "Apprentice track. Kids and apprentice auditions Sun Feb 22, 2026 at 1pm. Sign up via Lyric’s auditions page.",
+      "pay": "Paid",
+      "payMin": null,
+      "payMax": null,
+      "ageRange": "Up to 2026 HS graduate",
+      "ageMin": null,
+      "ageMax": null,
+      "type": "Theatre",
+      "union": "Union",
+      "gender": "All genders",
+      "ethnicity": "All ethnicities"
+    },
+    {
+      "roleTitle": "Volunteer Nun Chorus (Sister Act)",
+      "description": "Female-presenting singers 18+ for Sister Act. Auditions Feb 27, 2026. Specific material and sign-up on Lyric’s page. In-person only; no video submissions for this track.",
+      "pay": "Volunteer",
+      "payMin": null,
+      "payMax": null,
+      "ageRange": "18+",
+      "ageMin": 18,
+      "ageMax": null,
+      "type": "Theatre",
+      "union": "Non-Union",
+      "gender": "Female",
+      "ethnicity": "All ethnicities"
+    }
+  ],
+  "slug": "lyric-theatre-summer-2026"
+}

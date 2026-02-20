@@ -172,7 +172,10 @@
   }
 
   function loadData() {
-    fetch("data/directory.json")
+    var script = document.currentScript || document.querySelector('script[src*="directory.js"]');
+    var base = (script && script.src) ? script.src.replace(/\/js\/[^/]*$/, "/") : "";
+    var dataUrl = base ? base + "data/directory.json" : "data/directory.json";
+    fetch(dataUrl)
       .then(function (r) {
         return r.json();
       })
