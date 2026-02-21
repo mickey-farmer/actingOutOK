@@ -27,6 +27,8 @@ type CastingRole = {
   ethnicity?: string;
 };
 
+type CastingRoleUpdates = Partial<CastingRole>;
+
 type CastingDetail = {
   slug: string;
   id?: string;
@@ -42,6 +44,14 @@ type CastingDetail = {
   exclusive?: boolean;
   under18?: boolean;
   roles?: CastingRole[];
+};
+
+type CastingCallFormProps = {
+  initialDetail: CastingDetail;
+  onSave: (d: CastingDetail) => void;
+  onCancel: () => void;
+  saving: boolean;
+  onRemove?: () => void;
 };
 
 function listEntryFromDetail(d: CastingDetail): CastingListEntry {
@@ -61,11 +71,11 @@ function listEntryFromDetail(d: CastingDetail): CastingListEntry {
 }
 
 export default function AdminCastingCallsPage() {
-  const [list, setList] = useState<CastingListEntry[]>([]);
+  const [list, setList] = useState([] as CastingListEntry[]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
-  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [message, setMessage] = useState(null as { type: "error" | "success"; text: string } | null);
+  const [editingSlug, setEditingSlug] = useState(null as string | null);
   const [adding, setAdding] = useState(false);
   const [useSupabase, setUseSupabase] = useState(false);
 
@@ -419,7 +429,7 @@ function CastingCallEditor({
   onRemove: () => void;
   saving: boolean;
 }) {
-  const [detail, setDetail] = useState<CastingDetail | null>(null);
+  const [detail, setDetail] = useState(null as CastingDetail | null);
   const [loadingDetail, setLoadingDetail] = useState(true);
 
   useEffect(() => {
@@ -484,19 +494,8 @@ function buildDetailFromList(e: CastingListEntry): CastingDetail {
   };
 }
 
-function CastingCallForm({
-  initialDetail,
-  onSave,
-  onCancel,
-  saving,
-  onRemove,
-}: {
-  initialDetail: CastingDetail;
-  onSave: (d: CastingDetail) => void;
-  onCancel: () => void;
-  saving: boolean;
-  onRemove?: () => void;
-}) {
+function CastingCallForm(props: CastingCallFormProps) {
+  const { initialDetail, onSave, onCancel, saving, onRemove } = props;
   const [slug, setSlug] = useState(initialDetail.slug);
   const [title, setTitle] = useState(initialDetail.title);
   const [date, setDate] = useState(initialDetail.date ?? "");
@@ -509,7 +508,8 @@ function CastingCallForm({
   const [sourceLink, setSourceLink] = useState(initialDetail.sourceLink ?? "");
   const [exclusive, setExclusive] = useState(initialDetail.exclusive ?? false);
   const [under18, setUnder18] = useState(initialDetail.under18 ?? false);
-  const [roles, setRoles] = useState<CastingRole[]>(initialDetail.roles?.length ? initialDetail.roles : []);
+  const initialRoles: CastingRole[] = initialDetail.roles?.length ? initialDetail.roles : [];
+  const [roles, setRoles] = useState(initialRoles);
 
   function handleSubmit() {
     const d: CastingDetail = {
@@ -534,7 +534,7 @@ function CastingCallForm({
     setRoles((r) => [...r, { roleTitle: "", description: "", pay: "", ageRange: "", type: "Short Film", union: "Non-Union", gender: "", ethnicity: "All ethnicities" }]);
   }
 
-  function updateRole(i: number, updates: Partial<CastingRole>) {
+  function updateRole(i: number, updates: CastingRoleUpdates) {
     setRoles((r) => r.map((item, j) => (j === i ? { ...item, ...updates } : item)));
   }
 
@@ -592,27 +592,29 @@ function CastingCallForm({
       </div>
 
       <h3 style={{ margin: "1rem 0 0.5rem", fontSize: "1rem" }}>Roles</h3>
-      {roles.map((role, i) => (
-        <div key={i} style={{ padding: "0.5rem", background: "rgba(0,0,0,0.04)", borderRadius: 6, marginBottom: "0.5rem" }}>
-          <div className="admin-form-group">
-            <label>Role title</label>
-            <input value={role.roleTitle ?? ""} onChange={(e) => updateRole(i, { roleTitle: e.target.value })} />
+      {roles.map(function (role, i) {
+        return (
+          <div key={i} style={{ padding: "0.5rem", background: "rgba(0,0,0,0.04)", borderRadius: 6, marginBottom: "0.5rem" }}>
+            <div className="admin-form-group">
+              <label>Role title</label>
+              <input value={role.roleTitle ?? ""} onChange={(e) => updateRole(i, { roleTitle: e.target.value })} />
+            </div>
+            <div className="admin-form-group">
+              <label>Description</label>
+              <input value={role.description ?? ""} onChange={(e) => updateRole(i, { description: e.target.value })} />
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+              <div className="admin-form-group" style={{ flex: "1 1 120px" }}><label>Pay</label><input value={role.pay ?? ""} onChange={(e) => updateRole(i, { pay: e.target.value })} /></div>
+              <div className="admin-form-group" style={{ flex: "1 1 120px" }}><label>Age range</label><input value={role.ageRange ?? ""} onChange={(e) => updateRole(i, { ageRange: e.target.value })} /></div>
+              <div className="admin-form-group" style={{ flex: "1 1 100px" }}><label>Type</label><input value={role.type ?? ""} onChange={(e) => updateRole(i, { type: e.target.value })} /></div>
+              <div className="admin-form-group" style={{ flex: "1 1 100px" }}><label>Union</label><input value={role.union ?? ""} onChange={(e) => updateRole(i, { union: e.target.value })} /></div>
+              <div className="admin-form-group" style={{ flex: "1 1 80px" }}><label>Gender</label><input value={role.gender ?? ""} onChange={(e) => updateRole(i, { gender: e.target.value })} /></div>
+              <div className="admin-form-group" style={{ flex: "1 1 120px" }}><label>Ethnicity</label><input value={role.ethnicity ?? ""} onChange={(e) => updateRole(i, { ethnicity: e.target.value })} /></div>
+            </div>
+            <button type="button" className="admin-btn admin-btn-secondary" style={{ fontSize: "0.8rem", marginTop: "0.25rem" }} onClick={() => removeRole(i)}>Remove role</button>
           </div>
-          <div className="admin-form-group">
-            <label>Description</label>
-            <input value={role.description ?? ""} onChange={(e) => updateRole(i, { description: e.target.value })} />
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <div className="admin-form-group" style={{ flex: "1 1 120px" }><label>Pay</label><input value={role.pay ?? ""} onChange={(e) => updateRole(i, { pay: e.target.value })} /></div>
-            <div className="admin-form-group" style={{ flex: "1 1 120px" }><label>Age range</label><input value={role.ageRange ?? ""} onChange={(e) => updateRole(i, { ageRange: e.target.value })} /></div>
-            <div className="admin-form-group" style={{ flex: "1 1 100px" }><label>Type</label><input value={role.type ?? ""} onChange={(e) => updateRole(i, { type: e.target.value })} /></div>
-            <div className="admin-form-group" style={{ flex: "1 1 100px" }><label>Union</label><input value={role.union ?? ""} onChange={(e) => updateRole(i, { union: e.target.value })} /></div>
-            <div className="admin-form-group" style={{ flex: "1 1 80px" }><label>Gender</label><input value={role.gender ?? ""} onChange={(e) => updateRole(i, { gender: e.target.value })} /></div>
-            <div className="admin-form-group" style={{ flex: "1 1 120px" }><label>Ethnicity</label><input value={role.ethnicity ?? ""} onChange={(e) => updateRole(i, { ethnicity: e.target.value })} /></div>
-          </div>
-          <button type="button" className="admin-btn admin-btn-secondary" style={{ fontSize: "0.8rem", marginTop: "0.25rem" }} onClick={() => removeRole(i)}>Remove role</button>
-        </div>
-      ))}
+        );
+      })}
       <button type="button" className="admin-btn admin-btn-secondary" style={{ marginBottom: "1rem" }} onClick={addRole}>+ Add role</button>
 
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
