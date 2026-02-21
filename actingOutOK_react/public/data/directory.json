@@ -132,8 +132,54 @@
       "instagram": "https://www.instagram.com/kaytothelene/?hl=en",
       "otherLinks": null,
       "tmdbPersonId": null,
-      "photoUrl": "https://www.imdb.com/name/nm11103298/mediaviewer/rm3744979970/?ref_=nm_ov_ph",
-      "credits": null
+      "photoUrl": null,
+      "credits": {
+        "film": [
+          {
+            "projectName": "Chicken House",
+            "characterOrRole": "Willa",
+            "directorOrStudio": "2022"
+          },
+          {
+            "projectName": "Call Ghost",
+            "characterOrRole": "Jamie",
+            "directorOrStudio": "2024"
+          },
+          {
+            "projectName": "People Walk Dogs Late at Night in the Suburbs",
+            "characterOrRole": "Alyssa",
+            "directorOrStudio": ""
+          },
+          {
+            "projectName": "Quadrant",
+            "characterOrRole": "Guitar Girl",
+            "directorOrStudio": "2024"
+          },
+          {
+            "projectName": "Every Heavy Thing",
+            "characterOrRole": "Cheyenne",
+            "directorOrStudio": "2025"
+          },
+          {
+            "projectName": "Signing Off",
+            "characterOrRole": "",
+            "directorOrStudio": "2025"
+          },
+          {
+            "projectName": "Fire Breather",
+            "characterOrRole": "Lorin",
+            "directorOrStudio": "2025"
+          },
+          {
+            "projectName": "The Huntsman",
+            "characterOrRole": "Sally",
+            "directorOrStudio": "2026"
+          }
+        ],
+        "theatre": [],
+        "training": [],
+        "television": []
+      }
     }
   ],
   "Writers": [
