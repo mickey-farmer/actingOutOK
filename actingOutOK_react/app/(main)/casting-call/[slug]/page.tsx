@@ -49,7 +49,7 @@ export default function CastingCallPage() {
       setLoading(false);
       return;
     }
-    fetch(`/api/data/casting-calls/${encodeURIComponent(slug)}`)
+    fetch(`/api/data/casting-calls/${encodeURIComponent(slug)}?t=${Date.now()}`)
       .then((r) => {
         if (!r.ok) throw new Error("Not found");
         return r.json();
