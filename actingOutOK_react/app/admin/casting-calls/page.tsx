@@ -250,6 +250,21 @@ export default function AdminCastingCallsPage() {
     setSaving(false);
   }
 
+  async function deleteRepoFile(path: string, message: string): Promise<boolean> {
+    const res = await fetch("/api/admin/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ path, message }),
+    });
+    if (!res.ok) {
+      const result = await res.json().catch(() => ({}));
+      setMessage({ type: "error", text: result.error || "Failed to delete file" });
+      return false;
+    }
+    return true;
+  }
+
   async function removeFromList(slug: string) {
     if (useSupabase) {
       setSaving(true);
@@ -263,15 +278,38 @@ export default function AdminCastingCallsPage() {
         setMessage({ type: "error", text: result.error || "Delete failed" });
       } else {
         setList((prev) => prev.filter((e) => e.slug !== slug));
-        setMessage({ type: "success", text: "Removed from database." });
+        setMessage({ type: "success", text: "Removed from database. List and detail are both deleted." });
       }
       setEditingSlug(null);
       setSaving(false);
       return;
     }
+    setSaving(true);
+    setMessage(null);
     const newList = list.filter((e) => e.slug !== slug);
-    await handleSaveList(newList);
+    const listOk = await saveFile(
+      "public/data/casting-calls.json",
+      JSON.stringify(newList, null, 2),
+      "Admin: remove casting call from list – " + slug
+    );
+    if (!listOk) {
+      setSaving(false);
+      setEditingSlug(null);
+      return;
+    }
+    setList(newList);
+    const detailPath = `public/data/casting-calls/${slug}.json`;
+    const detailOk = await deleteRepoFile(
+      detailPath,
+      "Admin: remove casting call detail – " + slug
+    );
+    if (detailOk) {
+      setMessage({ type: "success", text: "Removed from list and detail file deleted. Site will update after deploy." });
+    } else {
+      setMessage({ type: "success", text: "Removed from list. Detail file could not be deleted (may not exist in repo)." });
+    }
     setEditingSlug(null);
+    setSaving(false);
   }
 
   async function setArchived(slug: string, archived: boolean) {
@@ -314,7 +352,7 @@ export default function AdminCastingCallsPage() {
     <>
       <h1 className="admin-page-title">Casting Calls</h1>
       <p style={{ margin: "0 0 1rem", fontSize: "0.9rem", color: "var(--color-muted)" }}>
-        List and detail are stored in the repo. Edit a call to change its detail page; archive to hide from the main list.
+        When using Supabase, list and detail are in the database; remove deletes both. When using JSON files, remove deletes the list entry and the detail file in the repo. Archive to hide from the main list without deleting.
       </p>
       {message && (
         <div className={`admin-alert admin-alert-${message.type}`} role="alert">
@@ -401,7 +439,7 @@ export default function AdminCastingCallsPage() {
                   type="button"
                   className="admin-btn admin-btn-secondary"
                   style={{ fontSize: "0.8rem", color: "#b91c1c" }}
-                  onClick={() => confirm("Remove from list? (Detail file will remain.)") && removeFromList(entry.slug)}
+                  onClick={() => confirm("Remove this casting call? It will be removed from the list and the detail page will no longer be available.") && removeFromList(entry.slug)}
                 >
                   Remove from list
                 </button>
@@ -623,7 +661,7 @@ function CastingCallForm(props: CastingCallFormProps) {
         </button>
         <button type="button" className="admin-btn admin-btn-secondary" onClick={onCancel}>Cancel</button>
         {onRemove && (
-          <button type="button" className="admin-btn admin-btn-secondary" style={{ color: "#b91c1c" }} onClick={() => confirm("Remove from list?") && onRemove()}>
+          <button type="button" className="admin-btn admin-btn-secondary" style={{ color: "#b91c1c" }} onClick={() => confirm("Remove this casting call? It will be removed from the list and the detail page will no longer be available.") && onRemove()}>
             Remove from list
           </button>
         )}

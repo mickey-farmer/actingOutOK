@@ -58,7 +58,8 @@ export default function CastingCallsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/data/casting-calls")
+    // Cache-bust so CDN/edge never serves a stale list (e.g. after removing a casting call)
+    fetch(`/api/data/casting-calls?t=${Date.now()}`)
       .then((r) => r.json())
       .then((data: CastingEntry[]) => {
         setList(Array.isArray(data) ? data : []);
