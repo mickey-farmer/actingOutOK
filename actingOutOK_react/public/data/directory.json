@@ -118,6 +118,22 @@
         "theatre": [],
         "training": []
       }
+    },
+    {
+      "id": "kaylene-snarsky",
+      "name": "Kaylene Snarsky",
+      "pronouns": "she/her",
+      "description": null,
+      "location": null,
+      "link": "https://www.imdb.com/name/nm11103298/?ref_=fn_t_1",
+      "contactLink": "https://www.instagram.com/kaytothelene/?hl=en",
+      "contactLabel": "Instagram",
+      "email": null,
+      "instagram": "https://www.instagram.com/kaytothelene/?hl=en",
+      "otherLinks": null,
+      "tmdbPersonId": null,
+      "photoUrl": null,
+      "credits": null
     }
   ],
   "Writers": [
