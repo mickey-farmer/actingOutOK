@@ -50,7 +50,7 @@ function isExpiringWithinWeek(entry: CastingEntry) {
 }
 
 function isArchived(entry: CastingEntry) {
-  return entry.archived === true || entry.archived === (true as unknown);
+  return Boolean(entry.archived);
 }
 
 export default function CastingCallsPage() {

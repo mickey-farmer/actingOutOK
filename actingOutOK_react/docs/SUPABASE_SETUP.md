@@ -52,7 +52,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 **Production (Vercel):** The app only reads from Supabase when **both** `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set in **Vercel** → Project → Settings → Environment Variables (for Production and/or Preview). If they are missing in production, the site uses the static JSON files in `public/data/` (casting-calls.json, casting-calls/*.json, etc.) instead.
 
-**If env vars are set but the site still shows old/deleted data:** The app uses cache-busting query params (`?t=...`) when fetching casting calls so CDN/edge should not serve a stale list. If you still see removed items after merging and deploying: (1) In Vercel → Deployments → **…** on the latest → **Redeploy** and enable **Clear Build Cache** (and “Clear cache” if shown). (2) Check **Response Headers** for the request to `/api/data/casting-calls`: **`X-Data-Source`** and **`X-List-Count`** tell you which source was used and how many items; compare **X-List-Count** with your Supabase row count to confirm the API is returning current data.
+**If env vars are set but the site still shows old/deleted data:** The app uses cache-busting query params (`?t=...`) when fetching casting calls so CDN/edge should not serve a stale list. If you still see removed items after merging and deploying: (1) In Vercel → **Deployments** → check which **commit** the current Production deployment is from. If it’s from *before* you removed the row/file, that deployment’s filesystem still has the old data (JSON fallback reads from the build). **Redeploy from the latest main** (e.g. **…** → **Redeploy** with **Clear Build Cache**) so the new build runs from a commit that no longer has the file. (2) Check **Response Headers** for the request to `/api/data/casting-calls`: **`X-Data-Source`** and **`X-List-Count`** tell you which source was used; compare **X-List-Count** with your Supabase row count to confirm the API is returning current data.
 
 ---
 
@@ -60,6 +60,9 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 - **Reading data**  
   All directory, resources, and casting-calls data is read from Supabase via the existing **`/api/data/*`** routes (directory, resources, casting-calls, casting-calls/[slug]). The frontend already uses these APIs.
+
+- **Archived casting calls**  
+  Entries with **`archived: true`** are shown in the “Archived” section on the Casting Calls page (both when the list comes from Supabase and when it comes from JSON). For the React site to reflect “archived” changes you make in Supabase, the React app must be using Supabase in that environment (i.e. **SUPABASE_URL** and **SUPABASE_SERVICE_ROLE_KEY** set in Vercel for Production). If the React app is using the JSON fallback there, the list is from **`public/data/casting-calls.json`** and archived is determined by the **`archived`** key on each entry in that file.
 
 - **Admin saves**  
   When both `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set, the admin tool:

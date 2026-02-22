@@ -4,7 +4,7 @@ import { Resend } from "resend";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
 
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "mickey@mickeyonstage.com";
-const RESEND_FROM = process.env.RESEND_FROM_EMAIL || "Acting Out OK <onboarding@resend.dev>";
+const RESEND_FROM = process.env.RESEND_FROM_EMAIL || "Acting Out OK <info@actingoutok.com>";
 const TURNSTILE_SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 export type ContactType =

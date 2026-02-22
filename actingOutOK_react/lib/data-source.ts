@@ -239,7 +239,10 @@ export async function getCastingCallsList(): Promise<CastingCallsListResult> {
 
   const path = join(PUBLIC_DATA, "casting-calls.json");
   const raw = JSON.parse(readFileSync(path, "utf-8")) as CastingListEntry[];
-  const list = Array.isArray(raw) ? raw : [];
+  const list = (Array.isArray(raw) ? raw : []).map((row) => ({
+    ...row,
+    archived: row.archived === true || row.archived === (true as unknown),
+  }));
   return { data: list, source: "json" };
 }
 
