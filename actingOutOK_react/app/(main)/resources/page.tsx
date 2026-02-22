@@ -47,6 +47,7 @@ function sectionId(section: string) {
 export default function ResourcesPage() {
   const [data, setData] = useState<ResourcesData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [navCollapsed, setNavCollapsed] = useState(false);
 
   useEffect(() => {
     fetch("/api/data/resources")
@@ -63,6 +64,37 @@ export default function ResourcesPage() {
 
   return (
     <div className="resources-page">
+      <aside
+        className={`resources-nav${navCollapsed ? " resources-nav-collapsed" : ""}`}
+        aria-label="Jump to section"
+        aria-expanded={!navCollapsed}
+      >
+        <button
+          type="button"
+          className="resources-nav-toggle"
+          aria-expanded={!navCollapsed}
+          aria-controls="resources-nav-list"
+          aria-label="Toggle section list"
+          onClick={() => setNavCollapsed((c) => !c)}
+        >
+          Sections
+        </button>
+        <nav aria-label="Resource sections">
+          <ul id="resources-nav-list" className="resources-nav-list">
+            {sections.map((section) => (
+              <li key={section}>
+                <a
+                  href={`#${sectionId(section)}`}
+                  className="resources-nav-link"
+                  onClick={() => setNavCollapsed(false)}
+                >
+                  {section}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
       <div className="resources-content">
       <div className="page-header">
         <h1>Resources</h1>
