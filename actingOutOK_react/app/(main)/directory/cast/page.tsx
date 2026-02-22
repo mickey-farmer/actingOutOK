@@ -47,10 +47,8 @@ export default function CastDirectoryPage() {
       setLoading(false);
       return;
     }
-    supabase
-      .from("cast")
-      .select("*")
-      .order("name")
+    const q = supabase.from("cast").select("*").order("name");
+    void Promise.resolve(q)
       .then(({ data: rows, error }) => {
         if (error) {
           setData({ Talent: [] });

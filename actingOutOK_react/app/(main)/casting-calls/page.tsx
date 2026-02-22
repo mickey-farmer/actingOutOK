@@ -83,10 +83,11 @@ export default function CastingCallsPage() {
       setLoading(false);
       return;
     }
-    supabase
+    const q = supabase
       .from("casting_calls")
       .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
-      .order("date", { ascending: false })
+      .order("date", { ascending: false });
+    void Promise.resolve(q)
       .then(({ data, error }) => {
         if (error) {
           setList([]);

@@ -75,11 +75,12 @@ export default function CrewDirectoryPage() {
       setLoading(false);
       return;
     }
-    supabase
+    const q = supabase
       .from("crew")
       .select("*")
       .order("sort_order")
-      .order("name")
+      .order("name");
+    void Promise.resolve(q)
       .then(({ data: rows, error }) => {
         if (error) {
           setData({});
