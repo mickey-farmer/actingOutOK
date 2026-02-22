@@ -214,6 +214,12 @@ export type CastingCallsListResult =
   | { data: CastingListEntry[]; source: "supabase" }
   | { data: CastingListEntry[]; source: "json" };
 
+/**
+ * Fetches the casting calls list only from the Supabase casting_calls table.
+ * When Supabase is not configured, returns an empty list. No local file or JSON is read.
+ * Includes the `archived` flag so the frontend can show active calls in the grid and
+ * archived calls in the collapsed "Archived" section (archived is not filtered out here).
+ */
 export async function getCastingCallsList(): Promise<CastingCallsListResult> {
   if (!isSupabaseConfigured()) {
     return { data: [], source: "json" };
@@ -224,7 +230,7 @@ export async function getCastingCallsList(): Promise<CastingCallsListResult> {
     .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
     .order("date", { ascending: false });
   if (error) throw new Error(error.message);
-  const list = (data || []).map((row: Record<string, unknown>) => ({
+  const list: CastingListEntry[] = (data || []).map((row: Record<string, unknown>) => ({
     slug: row.slug as string,
     title: row.title as string,
     date: row.date as string | null,
