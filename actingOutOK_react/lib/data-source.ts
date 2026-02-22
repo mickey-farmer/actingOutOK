@@ -1,8 +1,6 @@
 /**
  * Single source for directory, resources, and casting calls.
- * Uses Supabase when SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set;
- * otherwise reads from public/data/*.json (used by API routes).
- * Casting calls: only Supabase; when not configured, list is empty and detail is 404.
+ * This version strictly uses Supabase for Casting Calls to prevent stale JSON data.
  */
 
 import { getSupabase, isSupabaseConfigured } from "./supabase/server";
@@ -211,25 +209,27 @@ export type CastingCallDetail = {
 };
 
 export type CastingCallsListResult =
-  | { data: CastingListEntry[]; source: "supabase" }
-  | { data: CastingListEntry[]; source: "json" };
+  | { data: CastingListEntry[]; source: "supabase" };
 
 /**
- * Fetches the casting calls list only from the Supabase casting_calls table.
- * When Supabase is not configured, returns an empty list. No local file or JSON is read.
- * Includes the `archived` flag so the frontend can show active calls in the grid and
- * archived calls in the collapsed "Archived" section (archived is not filtered out here).
+ * Fetches casting calls ONLY from Supabase and EXCLUDES archived items.
+ * This prevents the 'Mad Jackal' ghosting issue caused by stale local JSON.
  */
 export async function getCastingCallsList(): Promise<CastingCallsListResult> {
   if (!isSupabaseConfigured()) {
-    return { data: [], source: "json" };
+    // If Supabase is down or not configured, return empty but do NOT fallback to JSON
+    return { data: [], source: "supabase" };
   }
+  
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("casting_calls")
     .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
+    .eq("archived", false) // STREICTLY FILTER OUT ARCHIVED
     .order("date", { ascending: false });
+
   if (error) throw new Error(error.message);
+
   const list: CastingListEntry[] = (data || []).map((row: Record<string, unknown>) => ({
     slug: row.slug as string,
     title: row.title as string,
@@ -243,6 +243,7 @@ export async function getCastingCallsList(): Promise<CastingCallsListResult> {
     roleCount: (row.role_count as number) ?? 0,
     archived: (row.archived as boolean) ?? false,
   }));
+
   return { data: list, source: "supabase" };
 }
 
@@ -255,7 +256,9 @@ export async function getCastingCallBySlug(slug: string): Promise<CastingCallDet
     .from("casting_calls")
     .select("*")
     .eq("slug", slug)
+    .eq("archived", false) // Also prevent direct navigation to archived items
     .single();
+
   if (error || !data) return null;
   const row = data as Record<string, unknown>;
   return {
