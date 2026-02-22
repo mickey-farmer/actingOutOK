@@ -65,11 +65,12 @@ export default function TalentProfilePage({ params }: { params: { slug: string }
       setLoading(false);
       return;
     }
-    supabase
+    const q = supabase
       .from("cast")
       .select("*")
       .eq("id", slug)
-      .single()
+      .single();
+    void Promise.resolve(q)
       .then(({ data: row, error }) => {
         if (cancelled) return;
         if (error || !row) {
