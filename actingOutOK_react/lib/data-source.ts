@@ -212,20 +212,17 @@ export type CastingCallsListResult =
   | { data: CastingListEntry[]; source: "supabase" };
 
 /**
- * Fetches casting calls ONLY from Supabase and EXCLUDES archived items.
- * This prevents the 'Mad Jackal' ghosting issue caused by stale local JSON.
+ * Fetches casting calls only from Supabase. Returns all rows (active and archived)
+ * so the frontend can show active in the grid and archived in the collapsed section.
  */
 export async function getCastingCallsList(): Promise<CastingCallsListResult> {
   if (!isSupabaseConfigured()) {
-    // If Supabase is down or not configured, return empty but do NOT fallback to JSON
     return { data: [], source: "supabase" };
   }
-  
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("casting_calls")
     .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
-    .eq("archived", false) // STREICTLY FILTER OUT ARCHIVED
     .order("date", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -256,7 +253,6 @@ export async function getCastingCallBySlug(slug: string): Promise<CastingCallDet
     .from("casting_calls")
     .select("*")
     .eq("slug", slug)
-    .eq("archived", false) // Also prevent direct navigation to archived items
     .single();
 
   if (error || !data) return null;
