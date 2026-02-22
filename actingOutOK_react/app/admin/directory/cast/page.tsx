@@ -326,6 +326,7 @@ function CastEntryForm({
   const [instagram, setInstagram] = useState(entry?.instagram ?? "");
   const [otherLinks, setOtherLinks] = useState(entry?.otherLinks ?? []);
   const [description, setDescription] = useState(entry?.description ?? "");
+  const [pills, setPills] = useState<string[]>(entry?.pills ?? []);
   const [id, setId] = useState(entry?.id ?? "");
   const [credits, setCredits] = useState<CreditsByCategory>({
     film: entry?.credits?.film ?? [],
@@ -468,7 +469,7 @@ function CastEntryForm({
       email: email.trim() || null,
       instagram: instagram.trim() || null,
       otherLinks: otherLinks.length ? otherLinks : null,
-      pills: undefined,
+      pills: pills.length ? pills : undefined,
       tmdbPersonId: tmdbPersonId ?? null,
       photoUrl: photoUrl.trim() || null,
       credits: hasCredits ? credits : null,
@@ -496,6 +497,24 @@ function CastEntryForm({
       <div className="admin-form-group">
         <label>Pronouns (optional)</label>
         <input value={pronouns} onChange={(e) => setPronouns(e.target.value)} placeholder="she/her" />
+      </div>
+      <div className="admin-form-group">
+        <label>Pills (optional) — e.g. Union status</label>
+        <input
+          value={pills.join(", ")}
+          onChange={(e) =>
+            setPills(
+              e.target.value
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            )
+          }
+          placeholder="SAG-AFTRA, Non-Union"
+        />
+        <p style={{ margin: "0.25rem 0 0", fontSize: "0.8rem", color: "var(--color-muted)" }}>
+          Comma-separated. Shown on the Cast directory card and profile. Use for Union status or other tags. Filterable on the Cast page.
+        </p>
       </div>
 
       <div className="admin-form-group">

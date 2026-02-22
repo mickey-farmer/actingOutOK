@@ -92,9 +92,10 @@ type CastRow = {
   tmdb_person_id?: number | null;
   photo_url?: string | null;
   credits?: unknown;
+  pills?: string[] | null;
 };
 
-function rowToCastEntry(row: CastRow): DirectoryEntry & { photoUrl?: string | null; tmdbPersonId?: number | null; credits?: unknown; otherLinks?: unknown; email?: string | null; instagram?: string | null } {
+function rowToCastEntry(row: CastRow): DirectoryEntry & { photoUrl?: string | null; tmdbPersonId?: number | null; credits?: unknown; otherLinks?: unknown; email?: string | null; instagram?: string | null; pills?: string[] } {
   return {
     id: row.id,
     name: row.name,
@@ -110,6 +111,7 @@ function rowToCastEntry(row: CastRow): DirectoryEntry & { photoUrl?: string | nu
     tmdbPersonId: row.tmdb_person_id ?? null,
     photoUrl: row.photo_url ?? null,
     credits: row.credits ?? null,
+    pills: Array.isArray(row.pills) ? row.pills : undefined,
   };
 }
 

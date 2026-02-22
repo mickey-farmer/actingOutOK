@@ -149,6 +149,15 @@ export default function TalentProfilePage({ params }: { params: { slug: string }
             {entry.pronouns && (
               <p className="talent-profile-pronouns">{entry.pronouns}</p>
             )}
+            {entry.pills?.length ? (
+              <div className="resource-pills">
+                {entry.pills.map((p) => (
+                  <span key={p} className="resource-pill">
+                    {p}
+                  </span>
+                ))}
+              </div>
+            ) : null}
             {entry.description && (
               <p className="talent-profile-bio">{entry.description}</p>
             )}

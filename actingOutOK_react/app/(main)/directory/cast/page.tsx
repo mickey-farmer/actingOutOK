@@ -22,6 +22,7 @@ export default function CastDirectoryPage() {
   const [data, setData] = useState<DirectoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [unionFilter, setUnionFilter] = useState("");
 
   useEffect(() => {
     fetch("/api/data/directory")
@@ -32,13 +33,24 @@ export default function CastDirectoryPage() {
 
   if (loading) return <p>Loading…</p>;
 
-  const castList = (data?.Talent || [])
+  const talent = data?.Talent ?? [];
+  const unionOptions = Array.from(
+    new Set(talent.flatMap((e) => e.pills ?? []))
+  ).sort((a, b) => a.localeCompare(b));
+
+  const castList = talent
     .filter((entry) => {
       const q = search.trim().toLowerCase();
-      if (!q) return true;
-      const name = (entry.name || "").toLowerCase();
-      const desc = (entry.description || "").toLowerCase();
-      return name.includes(q) || desc.includes(q);
+      if (q) {
+        const name = (entry.name || "").toLowerCase();
+        const desc = (entry.description || "").toLowerCase();
+        if (!name.includes(q) && !desc.includes(q)) return false;
+      }
+      if (unionFilter) {
+        const pills = entry.pills ?? [];
+        if (!pills.includes(unionFilter)) return false;
+      }
+      return true;
     })
     .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
@@ -57,7 +69,7 @@ export default function CastDirectoryPage() {
         </div>
 
         <details className="filters-details">
-          <summary className="filters-summary">Search</summary>
+          <summary className="filters-summary">Filters</summary>
           <div className="filters-bar">
             <div className="filter-group">
               <label htmlFor="cast-search">Search by name or description</label>
@@ -71,10 +83,29 @@ export default function CastDirectoryPage() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+            <div className="filter-group">
+              <label htmlFor="cast-union">Union status</label>
+              <select
+                id="cast-union"
+                aria-label="Filter by union status"
+                value={unionFilter}
+                onChange={(e) => setUnionFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {unionOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button
               type="button"
               className="filter-reset"
-              onClick={() => setSearch("")}
+              onClick={() => {
+                setSearch("");
+                setUnionFilter("");
+              }}
             >
               Reset
             </button>

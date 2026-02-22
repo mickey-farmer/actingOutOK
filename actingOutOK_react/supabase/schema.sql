@@ -21,13 +21,18 @@ create table if not exists public.cast (
   tmdb_person_id integer,
   photo_url text,
   credits jsonb default '{}',
+  pills jsonb default '[]',
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
 
+-- Add pills to cast if the table already existed without it (re-runnable):
+alter table public.cast add column if not exists pills jsonb default '[]';
+
 comment on table public.cast is 'Talent/Cast directory entries (was directory.json Talent section).';
 comment on column public.cast.credits is 'JSON: { film?, theatre?, training?, television? } each array of { projectName, characterOrRole, directorOrStudio }';
 comment on column public.cast.other_links is 'Array of { label, url }';
+comment on column public.cast.pills is 'Tags shown as pills (e.g. Union status: SAG-AFTRA, Non-Union). Filterable on Cast directory.';
 
 -- =============================================================================
 -- CREW (Crew directory by section)

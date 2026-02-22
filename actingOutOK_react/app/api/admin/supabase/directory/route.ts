@@ -20,6 +20,7 @@ function toCastRow(entry: Record<string, unknown>) {
     tmdb_person_id: (entry.tmdbPersonId as number) ?? null,
     photo_url: (entry.photoUrl as string) ?? null,
     credits: entry.credits ?? {},
+    pills: Array.isArray(entry.pills) ? entry.pills : [],
   };
 }
 
