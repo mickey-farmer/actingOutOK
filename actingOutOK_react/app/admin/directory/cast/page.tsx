@@ -3,8 +3,29 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import type { CastEntry, DirectoryData, CreditRow, CreditsByCategory } from "@/lib/cast-types";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 const TALENT = "Talent";
+
+function mapCastRowToEntry(row: Record<string, unknown>): CastEntry {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    pronouns: (row.pronouns as string) ?? null,
+    description: (row.description as string) ?? null,
+    location: (row.location as string) ?? null,
+    link: (row.link as string) ?? null,
+    contactLink: (row.contact_link as string) ?? null,
+    contactLabel: (row.contact_label as string) ?? null,
+    email: (row.email as string) ?? null,
+    instagram: (row.instagram as string) ?? null,
+    otherLinks: (row.other_links as CastEntry["otherLinks"]) ?? null,
+    pills: Array.isArray(row.pills) ? (row.pills as string[]) : undefined,
+    tmdbPersonId: (row.tmdb_person_id as number) ?? null,
+    photoUrl: (row.photo_url as string) ?? null,
+    credits: (row.credits as CastEntry["credits"]) ?? null,
+  };
+}
 
 const CREDIT_CATEGORIES = ["film", "theatre", "training", "television"] as const;
 const CREDIT_LABELS: Record<(typeof CREDIT_CATEGORIES)[number], string> = {
@@ -69,14 +90,23 @@ export default function AdminCastPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [dirRes, dsRes] = await Promise.all([
-        fetch("/api/data/directory"),
-        fetch("/api/admin/data-source", { credentials: "include" }),
-      ]);
-      if (!dirRes.ok) throw new Error("Failed to load directory");
-      const json: DirectoryData = await dirRes.json();
+      const [dirPromise, dsRes] = [
+        (async (): Promise<DirectoryData> => {
+          const supabase = getSupabaseClient();
+          if (!supabase) return { [TALENT]: [] };
+          const { data: rows, error } = await supabase
+            .from("cast")
+            .select("*")
+            .order("name");
+          if (error) return { [TALENT]: [] };
+          return {
+            [TALENT]: (rows ?? []).map((r) => mapCastRowToEntry(r as Record<string, unknown>)),
+          };
+        })(),
+        fetch("/api/admin/data-source", { credentials: "include" }).then((r) => r.json().catch(() => ({}))),
+      ];
+      const [json, ds] = await Promise.all([dirPromise, dsRes]);
       setData(json);
-      const ds = await dsRes.json().catch(() => ({}));
       setUseSupabase(!!ds.useSupabase);
     } catch (e) {
       setMessage({ type: "error", text: e instanceof Error ? e.message : "Failed to load" });

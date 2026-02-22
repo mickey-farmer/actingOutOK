@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type DirectoryEntry = {
   id: string;
@@ -16,6 +17,20 @@ type DirectoryEntry = {
 };
 
 type DirectoryData = Record<string, DirectoryEntry[]>;
+
+function mapCrewRow(row: Record<string, unknown>): DirectoryEntry {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    pronouns: (row.pronouns as string) ?? undefined,
+    description: (row.description as string) ?? undefined,
+    location: (row.location as string) ?? undefined,
+    link: (row.link as string) ?? undefined,
+    contactLink: (row.contact_link as string) ?? undefined,
+    contactLabel: (row.contact_label as string) ?? undefined,
+    pills: Array.isArray(row.pills) ? (row.pills as string[]) : undefined,
+  };
+}
 
 const CREW_SECTION_ORDER = [
   "Camera Operators",
@@ -54,9 +69,31 @@ export default function CrewDirectoryPage() {
   const [navCollapsed, setNavCollapsed] = useState(false);
 
   useEffect(() => {
-    fetch("/api/data/directory")
-      .then((r) => r.json())
-      .then(setData)
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setData({});
+      setLoading(false);
+      return;
+    }
+    supabase
+      .from("crew")
+      .select("*")
+      .order("sort_order")
+      .order("name")
+      .then(({ data: rows, error }) => {
+        if (error) {
+          setData({});
+          return;
+        }
+        const bySection: DirectoryData = {};
+        for (const row of rows ?? []) {
+          const r = row as Record<string, unknown>;
+          const section = r.section as string;
+          if (!bySection[section]) bySection[section] = [];
+          bySection[section].push(mapCrewRow(r));
+        }
+        setData(bySection);
+      })
       .finally(() => setLoading(false));
   }, []);
 

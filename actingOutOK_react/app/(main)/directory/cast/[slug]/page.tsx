@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { CastEntry, CreditsByCategory, CreditRow } from "@/lib/cast-types";
-
-type DirectoryData = Record<string, CastEntry[]>;
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type TmdbPerson = {
   personId: number;
@@ -21,14 +20,32 @@ function parseImdbId(link: string): string | null {
   return match ? match[1].toLowerCase() : null;
 }
 
+function mapCastRowToEntry(row: Record<string, unknown>): CastEntry {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    pronouns: (row.pronouns as string) ?? null,
+    description: (row.description as string) ?? null,
+    location: (row.location as string) ?? null,
+    link: (row.link as string) ?? null,
+    contactLink: (row.contact_link as string) ?? null,
+    contactLabel: (row.contact_label as string) ?? null,
+    email: (row.email as string) ?? null,
+    instagram: (row.instagram as string) ?? null,
+    otherLinks: (row.other_links as CastEntry["otherLinks"]) ?? null,
+    pills: Array.isArray(row.pills) ? (row.pills as string[]) : undefined,
+    tmdbPersonId: (row.tmdb_person_id as number) ?? null,
+    photoUrl: (row.photo_url as string) ?? null,
+    credits: (row.credits as CastEntry["credits"]) ?? null,
+  };
+}
+
 export default function TalentProfilePage({ params }: { params: { slug: string } }) {
   const slug = params.slug;
-  const [directory, setDirectory] = useState<DirectoryData | null>(null);
+  const [entry, setEntry] = useState<CastEntry | null>(null);
   const [tmdb, setTmdb] = useState<TmdbPerson | null>(null);
   const [loading, setLoading] = useState(true);
   const [tmdbError, setTmdbError] = useState<string | null>(null);
-
-  const entry = directory?.Talent?.find((e) => e.id === slug);
 
   const hasManualCredits =
     entry?.credits &&
@@ -42,13 +59,27 @@ export default function TalentProfilePage({ params }: { params: { slug: string }
     let cancelled = false;
     setLoading(true);
     setTmdbError(null);
-    fetch("/api/data/directory")
-      .then((r) => r.json())
-      .then((data: DirectoryData) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setEntry(null);
+      setLoading(false);
+      return;
+    }
+    supabase
+      .from("cast")
+      .select("*")
+      .eq("id", slug)
+      .single()
+      .then(({ data: row, error }) => {
         if (cancelled) return;
-        setDirectory(data);
-        const person = data.Talent?.find((e) => e.id === slug);
-        const imdbId = person?.link ? parseImdbId(person.link) : null;
+        if (error || !row) {
+          setEntry(null);
+          setLoading(false);
+          return;
+        }
+        const person = mapCastRowToEntry(row as Record<string, unknown>);
+        setEntry(person);
+        const imdbId = person.link ? parseImdbId(person.link) : null;
         if (!imdbId) {
           setLoading(false);
           return;
@@ -73,7 +104,7 @@ export default function TalentProfilePage({ params }: { params: { slug: string }
       })
       .catch(() => {
         if (!cancelled) {
-          setTmdbError("Failed to load directory");
+          setEntry(null);
           setLoading(false);
         }
       });

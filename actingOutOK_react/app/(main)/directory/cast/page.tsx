@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type DirectoryEntry = {
   id: string;
@@ -18,6 +19,21 @@ type DirectoryEntry = {
 
 type DirectoryData = Record<string, DirectoryEntry[]>;
 
+function mapCastRow(row: Record<string, unknown>): DirectoryEntry {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    pronouns: (row.pronouns as string) ?? undefined,
+    description: (row.description as string) ?? undefined,
+    location: (row.location as string) ?? undefined,
+    link: (row.link as string) ?? undefined,
+    contactLink: (row.contact_link as string) ?? undefined,
+    contactLabel: (row.contact_label as string) ?? undefined,
+    pills: Array.isArray(row.pills) ? (row.pills as string[]) : undefined,
+    photoUrl: (row.photo_url as string | null) ?? null,
+  };
+}
+
 export default function CastDirectoryPage() {
   const [data, setData] = useState<DirectoryData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,9 +41,25 @@ export default function CastDirectoryPage() {
   const [unionFilter, setUnionFilter] = useState("");
 
   useEffect(() => {
-    fetch("/api/data/directory")
-      .then((r) => r.json())
-      .then(setData)
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setData({ Talent: [] });
+      setLoading(false);
+      return;
+    }
+    supabase
+      .from("cast")
+      .select("*")
+      .order("name")
+      .then(({ data: rows, error }) => {
+        if (error) {
+          setData({ Talent: [] });
+          return;
+        }
+        setData({
+          Talent: (rows ?? []).map((r) => mapCastRow(r as Record<string, unknown>)),
+        });
+      })
       .finally(() => setLoading(false));
   }, []);
 

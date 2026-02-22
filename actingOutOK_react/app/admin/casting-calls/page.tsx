@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type CastingListEntry = {
   slug: string;
@@ -82,14 +83,33 @@ export default function AdminCastingCallsPage() {
   const loadList = useCallback(async () => {
     setLoading(true);
     try {
-      const [listRes, dsRes] = await Promise.all([
-        fetch("/api/data/casting-calls"),
-        fetch("/api/admin/data-source", { credentials: "include" }),
-      ]);
-      if (!listRes.ok) throw new Error("Failed to load casting calls");
-      const data: CastingListEntry[] = await listRes.json();
+      const [listPromise, dsRes] = [
+        (async (): Promise<CastingListEntry[]> => {
+          const supabase = getSupabaseClient();
+          if (!supabase) return [];
+          const { data, error } = await supabase
+            .from("casting_calls")
+            .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
+            .order("date", { ascending: false });
+          if (error) return [];
+          return (data ?? []).map((row: Record<string, unknown>) => ({
+            slug: row.slug as string,
+            title: row.title as string,
+            date: row.date as string | null,
+            auditionDeadline: row.audition_deadline as string | null,
+            location: row.location as string | null,
+            pay: row.pay as string | null,
+            type: row.type as string | null,
+            union: row.union_status as string | null,
+            under18: (row.under18 as boolean) ?? false,
+            roleCount: (row.role_count as number) ?? 0,
+            archived: (row.archived as boolean) ?? false,
+          }));
+        })(),
+        fetch("/api/admin/data-source", { credentials: "include" }).then((r) => r.json().catch(() => ({}))),
+      ];
+      const [data, ds] = await Promise.all([listPromise, dsRes]);
       setList(Array.isArray(data) ? data : []);
-      const ds = await dsRes.json().catch(() => ({}));
       setUseSupabase(!!ds.useSupabase);
     } catch (e) {
       setMessage({ type: "error", text: e instanceof Error ? e.message : "Failed to load" });
@@ -471,11 +491,39 @@ function CastingCallEditor({
   const [loadingDetail, setLoadingDetail] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/data/casting-calls/${encodeURIComponent(slug)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d) setDetail(d);
-        else setDetail(buildDetailFromList(listEntry));
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setDetail(buildDetailFromList(listEntry));
+      setLoadingDetail(false);
+      return;
+    }
+    const q = supabase
+      .from("casting_calls")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    void Promise.resolve(q)
+      .then(({ data, error }) => {
+        if (error || !data) {
+          setDetail(buildDetailFromList(listEntry));
+          return;
+        }
+        const row = data as Record<string, unknown>;
+        setDetail({
+          slug: row.slug as string,
+          title: row.title as string,
+          date: row.date as string | null,
+          auditionDeadline: row.audition_deadline as string | null,
+          location: row.location as string | null,
+          director: row.director as string | null,
+          filmingDates: row.filming_dates as string | null,
+          description: row.description as string | null,
+          submissionDetails: row.submission_details as string | null,
+          sourceLink: row.source_link as string | null,
+          exclusive: (row.exclusive as boolean) ?? false,
+          under18: (row.under18 as boolean) ?? false,
+          roles: (row.roles as CastingDetail["roles"]) ?? [],
+        });
       })
       .catch(() => setDetail(buildDetailFromList(listEntry)))
       .finally(() => setLoadingDetail(false));

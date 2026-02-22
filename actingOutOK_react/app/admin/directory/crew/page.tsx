@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type DirectoryEntry = {
   id: string;
@@ -15,6 +16,20 @@ type DirectoryEntry = {
 };
 
 type DirectoryData = Record<string, DirectoryEntry[]>;
+
+function mapCrewRow(row: Record<string, unknown>): DirectoryEntry {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    pronouns: (row.pronouns as string) ?? null,
+    description: (row.description as string) ?? "",
+    location: (row.location as string) ?? null,
+    link: (row.link as string) ?? null,
+    contactLink: (row.contact_link as string) ?? null,
+    contactLabel: (row.contact_label as string) ?? null,
+    pills: Array.isArray(row.pills) ? (row.pills as string[]) : undefined,
+  };
+}
 
 const CREW_SECTION_ORDER = [
   "Directors",
@@ -57,14 +72,29 @@ export default function AdminCrewPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [dirRes, dsRes] = await Promise.all([
-        fetch("/api/data/directory"),
-        fetch("/api/admin/data-source", { credentials: "include" }),
-      ]);
-      if (!dirRes.ok) throw new Error("Failed to load directory");
-      const json: DirectoryData = await dirRes.json();
+      const [dirPromise, dsRes] = [
+        (async (): Promise<DirectoryData> => {
+          const supabase = getSupabaseClient();
+          if (!supabase) return {};
+          const { data: rows, error } = await supabase
+            .from("crew")
+            .select("*")
+            .order("sort_order")
+            .order("name");
+          if (error) return {};
+          const bySection: DirectoryData = {};
+          for (const row of rows ?? []) {
+            const r = row as Record<string, unknown>;
+            const section = r.section as string;
+            if (!bySection[section]) bySection[section] = [];
+            bySection[section].push(mapCrewRow(r));
+          }
+          return bySection;
+        })(),
+        fetch("/api/admin/data-source", { credentials: "include" }).then((r) => r.json().catch(() => ({}))),
+      ];
+      const [json, ds] = await Promise.all([dirPromise, dsRes]);
       setData(json);
-      const ds = await dsRes.json().catch(() => ({}));
       setUseSupabase(!!ds.useSupabase);
     } catch (e) {
       setMessage({ type: "error", text: e instanceof Error ? e.message : "Failed to load" });

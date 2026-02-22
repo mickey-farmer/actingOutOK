@@ -1,8 +1,9 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 type CastingCallDetail = {
   slug: string;
@@ -28,6 +29,24 @@ type CastingCallDetail = {
   }>;
 };
 
+function rowToDetail(row: Record<string, unknown>): CastingCallDetail {
+  return {
+    slug: row.slug as string,
+    title: row.title as string,
+    date: row.date as string | undefined,
+    auditionDeadline: row.audition_deadline as string | undefined,
+    location: row.location as string | undefined,
+    director: row.director as string | undefined,
+    filmingDates: row.filming_dates as string | undefined,
+    description: row.description as string | undefined,
+    submissionDetails: row.submission_details as string | undefined,
+    sourceLink: row.source_link as string | undefined,
+    exclusive: (row.exclusive as boolean) ?? false,
+    under18: (row.under18 as boolean) ?? false,
+    roles: (row.roles as CastingCallDetail["roles"]) ?? [],
+  };
+}
+
 function formatDate(iso: string | undefined) {
   if (!iso) return "";
   return new Date(iso + "T12:00:00").toLocaleDateString("en-US", {
@@ -39,7 +58,6 @@ function formatDate(iso: string | undefined) {
 
 export default function CastingCallPage() {
   const params = useParams();
-  const router = useRouter();
   const slug = typeof params.slug === "string" ? params.slug : "";
   const [entry, setEntry] = useState<CastingCallDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,13 +67,25 @@ export default function CastingCallPage() {
       setLoading(false);
       return;
     }
-    fetch(`/api/data/casting-calls/${encodeURIComponent(slug)}?t=${Date.now()}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Not found");
-        return r.json();
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setEntry(null);
+      setLoading(false);
+      return;
+    }
+    const q = supabase
+      .from("casting_calls")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    void Promise.resolve(q)
+      .then(({ data, error }) => {
+        if (error || !data) {
+          setEntry(null);
+          return;
+        }
+        setEntry(rowToDetail(data as Record<string, unknown>));
       })
-      .then(setEntry)
-      .catch(() => setEntry(null))
       .finally(() => setLoading(false));
   }, [slug]);
 

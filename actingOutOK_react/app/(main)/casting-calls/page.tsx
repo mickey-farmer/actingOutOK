@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,22 @@ type CastingEntry = {
   roleCount: number;
   archived?: boolean;
 };
+
+function rowToListEntry(row: Record<string, unknown>): CastingEntry {
+  return {
+    slug: row.slug as string,
+    title: row.title as string,
+    date: row.date as string | null,
+    auditionDeadline: row.audition_deadline as string | null,
+    location: row.location as string | null,
+    pay: row.pay as string | null,
+    type: row.type as string | null,
+    union: row.union_status as string | null,
+    under18: (row.under18 as boolean) ?? false,
+    roleCount: (row.role_count as number) ?? 0,
+    archived: (row.archived as boolean) ?? false,
+  };
+}
 
 function formatDate(iso: string | null) {
   if (!iso) return "";
@@ -60,14 +77,24 @@ export default function CastingCallsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Cache-bust so CDN/edge never serves a stale list (e.g. after removing a casting call)
-    fetch(`/api/data/casting-calls?t=${Date.now()}`)
-      .then((r) => r.json())
-      .then((data: CastingEntry[]) => {
-        setList(Array.isArray(data) ? data : []);
-        setLoading(false);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setList([]);
+      setLoading(false);
+      return;
+    }
+    supabase
+      .from("casting_calls")
+      .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
+      .order("date", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setList([]);
+          return;
+        }
+        setList((data ?? []).map((row) => rowToListEntry(row as Record<string, unknown>)));
       })
-      .catch(() => setLoading(false));
+      .finally(() => setLoading(false));
   }, []);
 
   const active = list.filter((e) => !isArchived(e));
