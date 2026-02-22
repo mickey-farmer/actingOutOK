@@ -2,6 +2,7 @@
  * Single source for directory, resources, and casting calls.
  * Uses Supabase when SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set;
  * otherwise reads from public/data/*.json (used by API routes).
+ * Casting calls: only Supabase; when not configured, list is empty and detail is 404.
  */
 
 import { getSupabase, isSupabaseConfigured } from "./supabase/server";
@@ -214,84 +215,56 @@ export type CastingCallsListResult =
   | { data: CastingListEntry[]; source: "json" };
 
 export async function getCastingCallsList(): Promise<CastingCallsListResult> {
-  if (isSupabaseConfigured()) {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("casting_calls")
-      .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
-      .order("date", { ascending: false });
-    if (error) throw new Error(error.message);
-    const list = (data || []).map((row: Record<string, unknown>) => ({
-      slug: row.slug as string,
-      title: row.title as string,
-      date: row.date as string | null,
-      auditionDeadline: row.audition_deadline as string | null,
-      location: row.location as string | null,
-      pay: row.pay as string | null,
-      type: row.type as string | null,
-      union: row.union_status as string | null,
-      under18: (row.under18 as boolean) ?? false,
-      roleCount: (row.role_count as number) ?? 0,
-      archived: (row.archived as boolean) ?? false,
-    }));
-    return { data: list, source: "supabase" };
+  if (!isSupabaseConfigured()) {
+    return { data: [], source: "json" };
   }
-
-  const path = join(PUBLIC_DATA, "casting-calls.json");
-  const raw = JSON.parse(readFileSync(path, "utf-8")) as CastingListEntry[];
-  const list = (Array.isArray(raw) ? raw : []).map((row) => ({
-    ...row,
-    archived: row.archived === true || row.archived === (true as unknown),
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("casting_calls")
+    .select("slug, title, date, audition_deadline, location, pay, type, union_status, under18, role_count, archived")
+    .order("date", { ascending: false });
+  if (error) throw new Error(error.message);
+  const list = (data || []).map((row: Record<string, unknown>) => ({
+    slug: row.slug as string,
+    title: row.title as string,
+    date: row.date as string | null,
+    auditionDeadline: row.audition_deadline as string | null,
+    location: row.location as string | null,
+    pay: row.pay as string | null,
+    type: row.type as string | null,
+    union: row.union_status as string | null,
+    under18: (row.under18 as boolean) ?? false,
+    roleCount: (row.role_count as number) ?? 0,
+    archived: (row.archived as boolean) ?? false,
   }));
-  return { data: list, source: "json" };
+  return { data: list, source: "supabase" };
 }
 
 export async function getCastingCallBySlug(slug: string): Promise<CastingCallDetail | null> {
-  if (isSupabaseConfigured()) {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("casting_calls")
-      .select("*")
-      .eq("slug", slug)
-      .single();
-    if (error || !data) return null;
-    const row = data as Record<string, unknown>;
-    return {
-      slug: row.slug as string,
-      title: row.title as string,
-      date: row.date as string | null,
-      auditionDeadline: row.audition_deadline as string | null,
-      location: row.location as string | null,
-      director: row.director as string | null,
-      filmingDates: row.filming_dates as string | null,
-      description: row.description as string | null,
-      submissionDetails: row.submission_details as string | null,
-      sourceLink: row.source_link as string | null,
-      exclusive: (row.exclusive as boolean) ?? false,
-      under18: (row.under18 as boolean) ?? false,
-      roles: (row.roles as CastingCallDetail["roles"]) ?? [],
-    };
-  }
-
-  const path = join(PUBLIC_DATA, "casting-calls", `${slug}.json`);
-  try {
-    const raw = JSON.parse(readFileSync(path, "utf-8")) as Record<string, unknown>;
-    return {
-      slug: raw.slug as string,
-      title: raw.title as string,
-      date: raw.date as string | null,
-      auditionDeadline: (raw.auditionDeadline ?? raw.audition_deadline ?? null) as string | null,
-      location: raw.location as string | null,
-      director: raw.director as string | null,
-      filmingDates: (raw.filmingDates ?? raw.filming_dates ?? null) as string | null,
-      description: raw.description as string | null,
-      submissionDetails: (raw.submissionDetails ?? raw.submission_details ?? null) as string | null,
-      sourceLink: (raw.sourceLink ?? raw.source_link ?? null) as string | null,
-      exclusive: (raw.exclusive as boolean) ?? false,
-      under18: (raw.under18 as boolean) ?? false,
-      roles: (raw.roles as CastingCallDetail["roles"]) ?? [],
-    };
-  } catch {
+  if (!isSupabaseConfigured()) {
     return null;
   }
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("casting_calls")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+  if (error || !data) return null;
+  const row = data as Record<string, unknown>;
+  return {
+    slug: row.slug as string,
+    title: row.title as string,
+    date: row.date as string | null,
+    auditionDeadline: row.audition_deadline as string | null,
+    location: row.location as string | null,
+    director: row.director as string | null,
+    filmingDates: row.filming_dates as string | null,
+    description: row.description as string | null,
+    submissionDetails: row.submission_details as string | null,
+    sourceLink: row.source_link as string | null,
+    exclusive: (row.exclusive as boolean) ?? false,
+    under18: (row.under18 as boolean) ?? false,
+    roles: (row.roles as CastingCallDetail["roles"]) ?? [],
+  };
 }
